@@ -1,0 +1,3 @@
+#!/bin/execlineb -P
+foreground { s6-svscanctl -qb /run/scandir }
+/p/stage1

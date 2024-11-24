@@ -1,0 +1,36 @@
+#!/bin/execlineb -P
+getcwd -E T
+define B "#!/bin/execlineb -P"
+background {
+    redirfd -w 1 run-image/scandir/logger/run
+    echo "${B}
+redirfd -w 1 /dev/null
+redirfd -rnb 0 fifo
+s6-log -bd3 -- t ${T}/log"
+}
+background {
+    redirfd -w 1 run-image/scandir/.s6-svscan/crash
+    echo "${B}
+foreground { s6-svscanctl -qb ${T}/run/scandir }
+${T}/stage1"
+}
+background {
+    redirfd -w 1 stage1
+    echo "${B}
+if { test -f ${T}/fire }
+foreground { rm -r ${T}/run }
+if { cp -a ${T}/run-image ${T}/run }
+s6-setsid -qb
+redirfd -r 0 /dev/null
+redirfd -wnb 1 ${T}/run/scandir/logger/fifo
+background {
+    s6-setsid
+    redirfd -w 1 ${T}/run/scandir/logger/fifo
+    fdmove -c 2 1
+    if { s6-rc-init -c ${T}/sdb -l ${T}/run/rc ${T}/run/scandir }
+    s6-rc -l ${T}/run/rc change default
+}
+fdmove -c 2 1
+exec -ca s6-svscan s6-svscan ${T}/run/scandir"
+}
+mkfifo -m 600 run-image/scandir/logger/fifo

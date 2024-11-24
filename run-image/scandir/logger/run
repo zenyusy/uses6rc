@@ -1,0 +1,4 @@
+#!/bin/execlineb -P
+redirfd -w 1 /dev/null
+redirfd -rnb 0 fifo
+s6-log -bd3 -- t /p/log
