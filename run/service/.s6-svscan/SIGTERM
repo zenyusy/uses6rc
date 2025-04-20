@@ -1,0 +1,7 @@
+#!/usr/bin/execlineb -P
+/usr/bin/redirfd -w 1 /dev/console
+/usr/bin/foreground { /usr/bin/sync }
+/usr/bin/foreground { /usr/bin/s6-rc -v2 -t10000 -bDa change }
+/usr/bin/foreground { /usr/bin/s6-svc -a /run/service/s6lg }
+/usr/bin/foreground { /usr/bin/s6-svc -x /run/service/s6lg }
+/usr/bin/s6-svscanctl -tb /run/service

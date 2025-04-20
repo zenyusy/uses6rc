@@ -1,0 +1,20 @@
+#!/usr/bin/execlineb -P
+/usr/bin/execline-cd /
+/usr/bin/redirfd -w 1 /dev/console
+/usr/bin/fdmove -c 2 1
+/usr/bin/wait -r { }
+/usr/bin/foreground { /usr/bin/sync }
+/usr/bin/foreground { /usr/bin/sync }
+/usr/bin/foreground { /usr/bin/kill -TERM -1 }
+/usr/bin/foreground { /usr/bin/kill -CONT -1 }
+/usr/bin/foreground { /usr/bin/sleep 2 }
+/usr/bin/foreground {
+  /usr/bin/redirfd -w 2 /dev/null
+  /usr/bin/s6-svc -T 500 -wD /run/service/s6lg
+}
+/usr/bin/foreground { /usr/bin/kill -KILL -1 }
+/usr/bin/wait -t 10 { }
+/usr/bin/foreground { /usr/bin/swapoff -a }
+/usr/bin/foreground { /usr/bin/mount -n -o remount,ro / }
+/usr/bin/foreground { /usr/bin/sync }
+/usr/bin/poff

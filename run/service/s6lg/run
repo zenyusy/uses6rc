@@ -1,0 +1,4 @@
+#!/usr/bin/execlineb -P
+/usr/bin/redirfd -w 1 /dev/null
+/usr/bin/redirfd -rnb 0 fifo
+/usr/bin/s6-log -bpd3 -- t /run/uncaught-logs

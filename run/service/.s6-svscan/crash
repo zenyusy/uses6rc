@@ -1,0 +1,5 @@
+#!/usr/bin/execlineb -P
+/usr/bin/fdmove -c 1 2
+/usr/bin/redirfd -w 1 /dev/console
+/usr/bin/redirfd -r 0 /dev/console
+/usr/bin/bash -i

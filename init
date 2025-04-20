@@ -1,0 +1,19 @@
+#!/usr/bin/execlineb -P
+/usr/bin/emptyenv
+/usr/bin/execline-cd /
+/usr/bin/s6-setsid -qb
+/usr/bin/execline-umask 022
+/usr/bin/redirfd -r 0 /dev/null
+/usr/bin/if { /usr/bin/mount -n -t tmpfs -o rw,nosuid,nodev,mode=0755,size=10M tmpfs /run }
+/usr/bin/if { /usr/bin/dmesg -n 1 }
+/usr/bin/if { /usr/bin/cp -R --preserve=mode /PathTo/run / }
+/usr/bin/redirfd -wnb 1 /run/service/s6lg/fifo
+/usr/bin/background {
+  /usr/bin/s6-setsid
+  /usr/bin/redirfd -w 1 /run/service/s6lg/fifo
+  /usr/bin/fdmove -c 2 1
+  /usr/bin/if { /usr/bin/s6-rc-init -d -c /PathTo/sdbSymlink /run/service }
+  /usr/bin/s6-rc -t10000 change default
+}
+/usr/bin/fdmove -c 2 1
+/usr/bin/exec -ca s6-svscan /usr/bin/s6-svscan /run/service
